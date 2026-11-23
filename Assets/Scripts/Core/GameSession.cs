@@ -4,6 +4,7 @@ using System;
 
 public class GameSession : MonoBehaviour
 {
+    [SerializeField] private InputHandler inputHandler;
     private GameState currentGameState = GameState.Ready;
     private int playerScoreQuantity = 0;
     private int oponentScoreQuantity = 0;
@@ -25,38 +26,26 @@ public class GameSession : MonoBehaviour
             return;
         }
 
+        if (inputHandler == null)
+        {
+            Debug.LogError("InputHandler reference is missing in GameSession.");
+            return;
+        }
+
         leftDeadZone.OnBallEnterDeadZone += LeafDeadZone_OnBallEnterDeadZone;
         rightDeadZone.OnBallEnterDeadZone += RightDeadZone_OnBallEnterDeadZone;
+        inputHandler.InteractPressed += HandleInteractPressed;
+        inputHandler.PausePressed += HandlePausePressed;
     }
 
     private void OnDisable()
     {
-        if (leftDeadZone == null || rightDeadZone == null) return;
+        if (leftDeadZone == null || rightDeadZone == null || inputHandler == null) return;
 
         leftDeadZone.OnBallEnterDeadZone -= LeafDeadZone_OnBallEnterDeadZone;
         rightDeadZone.OnBallEnterDeadZone -= RightDeadZone_OnBallEnterDeadZone;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (currentGameState == GameState.Paused)
-            {
-                ChangeState(GameState.Playing);
-                Time.timeScale = 1f;
-            }
-            else if (currentGameState == GameState.Playing)
-            {
-                ChangeState(GameState.Paused);
-                Time.timeScale = 0f;
-            }
-        }
-
-        if (Input.GetMouseButtonDown(0) && currentGameState == GameState.Ready)
-        {
-            ChangeState(GameState.Playing);
-        }
+        inputHandler.InteractPressed -= HandleInteractPressed;
+        inputHandler.PausePressed -= HandlePausePressed;
     }
 
     private void LeafDeadZone_OnBallEnterDeadZone()
@@ -95,5 +84,27 @@ public class GameSession : MonoBehaviour
     {
         currentGameState = newState;
         OnStateChanged?.Invoke(currentGameState);
+    }
+
+    private void HandleInteractPressed()
+    {
+        if (currentGameState == GameState.Ready)
+        {
+            ChangeState(GameState.Playing);
+        }
+    }
+
+    private void HandlePausePressed()
+    {
+        if (currentGameState == GameState.Playing)
+        {
+            ChangeState(GameState.Paused);
+            Time.timeScale = 0f;
+        }
+        else if (currentGameState == GameState.Paused)
+        {
+            ChangeState(GameState.Playing);
+            Time.timeScale = 1f;
+        }
     }
 }

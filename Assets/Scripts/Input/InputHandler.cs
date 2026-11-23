@@ -41,15 +41,15 @@ public class InputHandler : MonoBehaviour
     {
         if (actions == null) return;
 
+        if (actions.Player.Interact.WasPressedThisFrame())
+            InteractPressed?.Invoke();
+
         bool canPlay = session.State == GameState.Playing;
 
         MoveAxis = canPlay
             ? Vector2.ClampMagnitude(
                 actions.Player.Move.ReadValue<Vector2>(), 1f)
             : Vector2.zero;
-
-        if (canPlay && actions.Player.Interact.WasPressedThisFrame())
-            InteractPressed?.Invoke();
 
         if (actions.Player.Pause.WasPressedThisFrame())
             PausePressed?.Invoke();

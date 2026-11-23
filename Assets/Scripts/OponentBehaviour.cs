@@ -2,7 +2,7 @@
 
 public class OponentBehaviour : MonoBehaviour
 {
-    [SerializeField] private GameSession session;
+    [SerializeField] private GameSession Session;
     [SerializeField] private BallBehaviour ball;
     [SerializeField][Min(0f)] private float speed;
 
@@ -16,23 +16,23 @@ public class OponentBehaviour : MonoBehaviour
 
     private void OnEnable()
     {
-        if (session == null)
+        if (Session == null)
         {
             Debug.LogError("GameSession reference is missing in OponentBehaviour.");
             return;
         }
 
-        session.OnStateChanged += OnGameStateChanged;
+        Session.OnStateChanged += OnGameStateChanged;
     }
 
     private void OnDisable()
     {
-        session.OnStateChanged -= OnGameStateChanged;
+        Session.OnStateChanged -= OnGameStateChanged;
     }
 
     private void Update()
     {
-        if (session.State != GameState.Playing) return;
+        if (Session.State != GameState.Playing) return;
 
         if (ball == null)
         {

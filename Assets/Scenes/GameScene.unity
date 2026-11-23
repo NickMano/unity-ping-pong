@@ -837,6 +837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 395cbb1749c1c4a1691a7698b214ad6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputHandler: {fileID: 561263164}
   leftDeadZone: {fileID: 1955247064}
   rightDeadZone: {fileID: 1864737067}
   leftScoreText: {fileID: 1965323036}
