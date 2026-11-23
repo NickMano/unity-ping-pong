@@ -8,7 +8,6 @@ public class OponentBehaviour : MonoBehaviour
 
     private Vector3 initPos;
     private float limit = 3.715f;
-    private bool canMove = false;
 
     private void Awake()
     {
@@ -33,11 +32,7 @@ public class OponentBehaviour : MonoBehaviour
 
     private void Update()
     {
-        if (!canMove)
-        {
-            transform.position = transform.position;
-            return;
-        }
+        if (session.State != GameState.Playing) return;
 
         if (ball == null)
         {
@@ -47,21 +42,17 @@ public class OponentBehaviour : MonoBehaviour
 
         if (ball.transform.position.y > transform.position.y)
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y + speed, transform.position.z);
+            transform.position = new Vector2(transform.position.x, transform.position.y + speed);
         }
         else if (ball.transform.position.y < transform.position.y)
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y - speed, -limit, limit), transform.position.z);
+            transform.position = new Vector2(transform.position.x, Mathf.Clamp(transform.position.y - speed, -limit, limit));
         }
     }
 
     private void OnGameStateChanged(GameState newState)
     {
-        if (newState == GameState.Ready)
-        {
-            transform.position = initPos;
-        }
-
-        canMove = newState == GameState.Playing;
+        if (newState != GameState.Ready) return;
+        transform.position = initPos;
     }
 }
