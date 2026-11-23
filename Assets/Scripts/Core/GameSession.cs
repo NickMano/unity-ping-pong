@@ -15,6 +15,7 @@ public class GameSession : MonoBehaviour
     [SerializeField] private Text rightScoreText;
 
     public event Action<GameState> OnStateChanged;
+    public GameState State => currentGameState;
 
     private void OnEnable()
     {
