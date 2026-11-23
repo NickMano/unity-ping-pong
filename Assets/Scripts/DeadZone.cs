@@ -1,46 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(AudioSource))]
 public class DeadZone : MonoBehaviour
 {
-    public Text playerScoreText;
-    public Text oponentScoreText;
-    public SceneChanger sceneChanger;
-
-
-    int playerScoreQuantity = 0, oponentScoreQuantity = 0;
     private AudioSource audioSource;
 
-    void Start()
+    public event Action OnBallEnterDeadZone;
+
+    private void Awake()
     {
-        audioSource = gameObject.GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
-    void OnTriggerEnter2D(Collider2D other)
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (gameObject.tag == "PlayerWall") {
-            oponentScoreQuantity++;
-            updateScoreLabel(oponentScoreText, oponentScoreQuantity);
-        } else if(gameObject.tag == "OponentWall") {
-            playerScoreQuantity++;
-            updateScoreLabel(playerScoreText, playerScoreQuantity);
-        }
-        checkScore();
-        other.GetComponent<BallBehaviour>().gameStarted = false;
+        if (!other.TryGetComponent(out BallBehaviour ball)) return;
+
+        OnBallEnterDeadZone?.Invoke();
         audioSource.Play();
-    }
-
-    private void updateScoreLabel(Text label, int score) {
-        label.text = score.ToString();
-    }
-
-    void checkScore() {
-        if (playerScoreQuantity >= 3) {
-            sceneChanger.ChangeSceneTo("WinScene");
-        } else if (oponentScoreQuantity >= 3) {
-            sceneChanger.ChangeSceneTo("GameOverScene");
-        }
     }
 }
